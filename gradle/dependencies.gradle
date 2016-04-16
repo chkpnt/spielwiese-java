@@ -1,0 +1,11 @@
+dependencyManagement {
+    dependencies {
+        dependency "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+        
+        dependency 'com.querydsl:querydsl-apt:4.1.0'
+        dependency 'com.querydsl:querydsl-core:4.1.0'
+        dependency 'com.querydsl:querydsl-jpa:4.1.0'
+        
+        dependency 'javax.inject:javax.inject:1'
+     }
+}

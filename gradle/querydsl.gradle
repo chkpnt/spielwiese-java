@@ -1,0 +1,48 @@
+kapt {
+    generateStubs = true
+}
+
+dependencies {
+    kapt "com.querydsl:querydsl-apt:4.1.0:jpa"
+}
+
+
+// Für gradle gilt: kapt fügt die generierten Class-Files zum Classpath zu, https://github.com/JetBrains/kotlin/blob/cb4702c4064b1edfb8ac3d53d421df34de9b140a/libraries/tools/kotlin-gradle-plugin/src/main/kotlin/org/jetbrains/kotlin/gradle/internal/AnnotationProcessingManager.kt#L53
+// Damit aber auch Eclipse auf die Q-Klassen zugreifen kann, müssen die Quellen
+// als Source-Folder hinzugefügt werden. Direkt "$buildDir/generated/source/kapt/main" hinzuzfügen
+// finde ich unsauber. Drum der SyncTask.
+// Folgendes geht nicht, da sonst die Q-Klassen doppelt vorliegen würden:
+// - sourceSets.main.java.srcDir "$buildDir/generated/source/kapt/main"
+task copyToGeneratedSourcesDir(type: Sync) {
+	from "$buildDir/generated/source/kapt/main"
+	into generatedSourcesDir
+}
+
+// Sprechenderer Name als 'compileKotlinAfterJava'
+task generateQueryDSL {
+	dependsOn 'compileKotlinAfterJava'
+	finalizedBy 'copyToGeneratedSourcesDir'
+}
+
+
+// ======================================================================
+/* Und so würde es ohne kapt gemacht werden (geht nicht mit Kotlin-Code):
+configurations {
+    querydslapt
+}
+
+dependencies {
+    querydslapt "com.querydsl:querydsl-apt:4.1.0:jpa"
+}
+
+task generateQueryDSL(type: JavaCompile, group: 'build', description: 'Generates the QueryDSL query types') {
+    source = sourceSets.main.java
+    classpath = configurations.compile + configurations.querydslapt
+    options.compilerArgs = [
+            "-proc:only",
+            "-processor", "com.querydsl.apt.jpa.JPAAnnotationProcessor",
+            "-Aquerydsl.entityAccessors=true",
+    ]
+    destinationDir = generatedSourcesDir
+}
+*/

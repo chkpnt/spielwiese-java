@@ -1,0 +1,51 @@
+buildscript {
+	ext {
+		springBootVersion = '1.4.0.M2'
+		kotlin_version = '1.0.1-1'
+	}
+	repositories {
+		jcenter()
+		maven { url "https://repo.spring.io/snapshot" }
+		maven { url "https://repo.spring.io/milestone" }
+	}
+	dependencies {
+		classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion" 
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'eclipse'
+apply plugin: 'spring-boot' 
+apply from: 'gradle/dependencies.gradle'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    jcenter()
+    maven { url "https://repo.spring.io/snapshot" }
+	maven { url "https://repo.spring.io/milestone" }
+}
+
+ext.generatedSourcesDir = file('src/generated/java/')
+
+dependencies {   
+    compile 'org.jetbrains.kotlin:kotlin-stdlib'
+    compile 'org.springframework.boot:spring-boot-starter-data-jpa'
+    compile 'com.querydsl:querydsl-jpa'
+    compile 'javax.inject:javax.inject'
+    
+    //runtime 'org.hibernate:hibernate-java8'
+    //runtime 'org.hibernate:hibernate-entitymanager'
+    runtime 'org.hsqldb:hsqldb'
+
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '2.12'
+}
+
+apply from: 'gradle/querydsl.gradle'
